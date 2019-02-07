@@ -49,7 +49,7 @@ public class ProfissionalController extends AptareCrudController<Profissional, P
    @Override
    protected String[] juncaoGet()
    {
-      return new String[] { "listaProfissionalQualificacao",
+      return new String[] { "listaProfissionalQualificacao*.qualificacao*",
                             "cadastroUnico.pessoaFisica.listaTelefone*",
                             "cadastroUnico.listaEndereco.correio*",
                             "cadastroUnico.listaEndereco.extensaoEndereco*", 
@@ -86,6 +86,10 @@ public class ProfissionalController extends AptareCrudController<Profissional, P
       ProfissionalDTO dto = new ProfissionalDTO();
       modelMapper.getConfiguration().setAmbiguityIgnored(true);
       modelMapper.map(profissional, dto);
+      
+      
+      
+      
 
       return dto;
 
