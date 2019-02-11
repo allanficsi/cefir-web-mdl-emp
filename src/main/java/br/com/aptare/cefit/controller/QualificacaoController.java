@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 import br.com.aptare.cefit.profissional.entity.Qualificacao;
 import br.com.aptare.cefit.profissional.service.QualificacaoService;
 import br.com.aptare.fda.exception.AptareException;
+import br.com.aptare.seguranca.entidade.Auditoria;
 
 @RestController
 @RequestMapping("/api/qualificacao")
@@ -26,8 +27,15 @@ public class QualificacaoController extends AptareCrudController<Qualificacao, Q
    protected void atualizarStatusEntidade(HttpServletRequest request, Qualificacao qualificacao, String status) throws AptareException
    {
       qualificacao.setFlagAtivo(status);
+      qualificacao.setAuditoria(new Auditoria());
       qualificacao.getAuditoria().setDataAlteracao(new Date());
-      qualificacao.getAuditoria().setCodigoUsuarioAlteracao(super.getUsuarioFromRequest(request).getCodigo());
+      qualificacao.getAuditoria().setCodigoUsuarioAlteracao(this.getUsuarioFromRequest(request).getCodigo());
+   }
+   
+   @Override
+   protected void ativarInativar(Qualificacao entity) throws AptareException
+   {
+      getService().ativarInativar(entity);
    }
    
    @Override

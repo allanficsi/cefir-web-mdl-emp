@@ -14,6 +14,7 @@ import br.com.aptare.cefit.profissional.dto.ProfissionalDTO;
 import br.com.aptare.cefit.profissional.entity.Profissional;
 import br.com.aptare.cefit.profissional.service.ProfissionalService;
 import br.com.aptare.fda.exception.AptareException;
+import br.com.aptare.seguranca.entidade.Auditoria;
 
 @RestController
 @RequestMapping("/api/profissional")
@@ -29,7 +30,8 @@ public class ProfissionalController extends AptareCrudController<Profissional, P
    @Override
    protected void atualizarStatusEntidade(HttpServletRequest request, Profissional entity, String status) throws AptareException
    {
-      //entity.setSituacao(status.equals("S") ? EmpregadorService.SITUACAO_ATIVA : EmpregadorService.SITUACAO_INATIVA);
+      entity.setFlagAtivo(status);
+      entity.setAuditoria(new Auditoria());
       entity.getAuditoria().setDataAlteracao(new Date());
       entity.getAuditoria().setCodigoUsuarioAlteracao(super.getUsuarioFromRequest(request).getCodigo());
    }
@@ -37,7 +39,7 @@ public class ProfissionalController extends AptareCrudController<Profissional, P
    @Override
    protected void ativarInativar(Profissional entity) throws AptareException
    {
-      //this.getService().ativarInativar(entity);
+      this.getService().ativarInativar(entity);
    }
 
    @Override
