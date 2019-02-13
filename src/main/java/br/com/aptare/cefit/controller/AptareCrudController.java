@@ -149,16 +149,8 @@ public class AptareCrudController<Entity, Service extends AptareService<Entity>>
       Response<String> response = new Response<String>();
       try
       {
-         entity = getService().get(entity, null, null);
-
-         if (entity == null)
-         {
-            response.getErrors().add("Registro não encontrado");
-            return ResponseEntity.badRequest().body(response);
-         }
-
-         atualizarStatusEntidade(request, entity, "N");
-         ativarInativar(entity);
+         this.atualizarStatusEntidade(request, entity, "N");
+         this.ativarInativar(entity);
       }
       catch (Exception e)
       {
@@ -175,14 +167,6 @@ public class AptareCrudController<Entity, Service extends AptareService<Entity>>
       Response<String> response = new Response<String>();
       try
       {
-         entity = getService().get(entity, null, null);
-
-         if (entity == null)
-         {
-            response.getErrors().add("Registro não encontrado");
-            return ResponseEntity.badRequest().body(response);
-         }
-
          atualizarStatusEntidade(request, entity, "S");
          ativarInativar(entity);
       }
@@ -208,7 +192,6 @@ public class AptareCrudController<Entity, Service extends AptareService<Entity>>
    
    protected void ativarInativar(Entity entity) throws AptareException
    {
-      getService().alterar(entity);
    }
 
    @SuppressWarnings("unchecked")

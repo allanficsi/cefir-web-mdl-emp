@@ -19,6 +19,7 @@ import br.com.aptare.cefit.empregador.dto.EmpregadorDTO;
 import br.com.aptare.cefit.empregador.entity.Empregador;
 import br.com.aptare.cefit.empregador.service.EmpregadorService;
 import br.com.aptare.fda.exception.AptareException;
+import br.com.aptare.seguranca.entidade.Auditoria;
 
 @RestController
 @RequestMapping("/api/empregador")
@@ -35,6 +36,7 @@ public class EmpregadorController extends AptareCrudController<Empregador, Empre
    protected void atualizarStatusEntidade(HttpServletRequest request, Empregador entity, String status) throws AptareException
    {
       entity.setSituacao( status.equals("S") ? EmpregadorService.SITUACAO_ATIVA : EmpregadorService.SITUACAO_INATIVA );
+      entity.setAuditoria(new Auditoria());
       entity.getAuditoria().setDataAlteracao(new Date());
       entity.getAuditoria().setCodigoUsuarioAlteracao(super.getUsuarioFromRequest(request).getCodigo());
    }
@@ -55,8 +57,8 @@ public class EmpregadorController extends AptareCrudController<Empregador, Empre
    protected String[] juncaoGet()
    {
       return new String[] { "cadastroUnico.pessoaJuridica*.listaContato*.cargo*", 
-                            "cadastroUnico.pessoaJuridica*.listaContato*.listaTelefone*", 
-                            "cadastroUnico.pessoaFisica*.listaTelefone*",
+                            "cadastroUnico.pessoaJuridica*.listaContato*.listaTelefone*.auditoria*", 
+                            "cadastroUnico.pessoaFisica*.listaTelefone*.auditoria*",
                             "cadastroUnico.listaEndereco.correio*", 
                             "cadastroUnico.listaEndereco.extensaoEndereco*", 
                             "auditoria.usuarioInclusao" };

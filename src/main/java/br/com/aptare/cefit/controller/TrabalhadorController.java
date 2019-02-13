@@ -20,6 +20,7 @@ import br.com.aptare.cefit.trabalhador.entity.TrabalhadorCbo;
 import br.com.aptare.cefit.trabalhador.entity.TrabalhadorDeficiencia;
 import br.com.aptare.cefit.trabalhador.service.TrabalhadorService;
 import br.com.aptare.fda.exception.AptareException;
+import br.com.aptare.seguranca.entidade.Auditoria;
 
 @RestController
 @RequestMapping("/api/trabalhador")
@@ -36,6 +37,7 @@ public class TrabalhadorController extends AptareCrudController<Trabalhador, Tra
    protected void atualizarStatusEntidade(HttpServletRequest request, Trabalhador entity, String status) throws AptareException
    {
       entity.setSituacao(status.equals("S") ? EmpregadorService.SITUACAO_ATIVA : EmpregadorService.SITUACAO_INATIVA);
+      entity.setAuditoria(new Auditoria());
       entity.getAuditoria().setDataAlteracao(new Date());
       entity.getAuditoria().setCodigoUsuarioAlteracao(super.getUsuarioFromRequest(request).getCodigo());
    }
