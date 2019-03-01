@@ -39,7 +39,7 @@ public class LocalController extends AptareCrudController<Local, LocalService>
    }
    
    @Override
-   protected String[] getOrdenacaoPesquisar()
+   protected String[] ordenacaoPesquisar()
    {
       return new String[] { "nome" };
    }

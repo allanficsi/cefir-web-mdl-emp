@@ -39,7 +39,7 @@ public class QualificacaoController extends AptareCrudController<Qualificacao, Q
    }
    
    @Override
-   protected String[] getOrdenacaoPesquisar()
+   protected String[] ordenacaoPesquisar()
    {
       return new String[] { "descricao" };
    }

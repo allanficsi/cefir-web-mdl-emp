@@ -65,7 +65,7 @@ public class EmpregadorController extends AptareCrudController<Empregador, Empre
    }
    
    @Override
-   protected String[] getOrdenacaoPesquisar()
+   protected String[] ordenacaoPesquisar()
    {
       return new String[] { "cadastroUnico.pessoaJuridica.nomeFantasia" };
    }
