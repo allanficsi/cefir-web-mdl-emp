@@ -39,7 +39,7 @@ public class ItemEspacoController extends AptareCrudController<ItemEspaco, ItemE
    }
    
    @Override
-   protected String[] getOrdenacaoPesquisar()
+   protected String[] ordenacaoPesquisar()
    {
       return new String[] { "descricao" };
    }

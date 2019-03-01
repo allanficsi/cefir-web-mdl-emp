@@ -62,7 +62,7 @@ public class TrabalhadorController extends AptareCrudController<Trabalhador, Tra
    }
 
    @Override
-   protected String[] getOrdenacaoPesquisar()
+   protected String[] ordenacaoPesquisar()
    {
       return new String[] { "cadastroUnico.nome" };
    }

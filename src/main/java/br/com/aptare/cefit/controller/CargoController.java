@@ -39,7 +39,7 @@ public class CargoController extends AptareCrudController<Cargo, CargoService>
    }
    
    @Override
-   protected String[] getOrdenacaoPesquisar()
+   protected String[] ordenacaoPesquisar()
    {
       return new String[] { "descricao" };
    }

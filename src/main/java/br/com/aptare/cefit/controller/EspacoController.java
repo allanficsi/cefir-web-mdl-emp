@@ -175,8 +175,14 @@ public class EspacoController extends AptareCrudController<Espaco, EspacoService
    }
    
    @Override
-   protected String[] getOrdenacaoPesquisar()
+   protected String[] ordenacaoPesquisar()
    {
       return new String[] { "nome" };
+   }
+   
+   @Override
+   protected String[] ordenacaoGet()
+   {
+      return new String[] { "nome", "listaEspacoItemEspaco.itemEspaco.descricao" };
    }
 }

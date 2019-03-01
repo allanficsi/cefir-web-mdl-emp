@@ -51,7 +51,7 @@ public class AptareCrudController<Entity, Service extends AptareService<Entity>>
       try
       {
          List<Entity> lista = null;
-         lista = getService().pesquisar(entity, juncaoPesquisar(), getOrdenacaoPesquisar());
+         lista = getService().pesquisar(entity, juncaoPesquisar(), ordenacaoPesquisar());
          
          if (lista != null)
          {
@@ -79,7 +79,7 @@ public class AptareCrudController<Entity, Service extends AptareService<Entity>>
       try
       {
          Entity retorno = null;
-         retorno = getService().get(entity, juncaoGet(), getOrdenacaoPesquisar());
+         retorno = getService().get(entity, juncaoGet(), ordenacaoGet());
          
          retorno = new RetirarLazy<Entity>(retorno).execute();
          response.setData(this.atualizarEntidadeResponse(retorno));
@@ -239,7 +239,12 @@ public class AptareCrudController<Entity, Service extends AptareService<Entity>>
       return null;
    }
 
-   protected String[] getOrdenacaoPesquisar()
+   protected String[] ordenacaoPesquisar()
+   {
+      return null;
+   }
+   
+   protected String[] ordenacaoGet()
    {
       return null;
    }

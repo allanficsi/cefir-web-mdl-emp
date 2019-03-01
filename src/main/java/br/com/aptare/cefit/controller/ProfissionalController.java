@@ -59,7 +59,7 @@ public class ProfissionalController extends AptareCrudController<Profissional, P
    }
 
    @Override
-   protected String[] getOrdenacaoPesquisar()
+   protected String[] ordenacaoPesquisar()
    {
       return new String[] { "cadastroUnico.nome" };
    }
