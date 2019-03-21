@@ -82,7 +82,12 @@ public class AptareCrudController<Entity, Service extends AptareService<Entity>>
          retorno = getService().get(entity, juncaoGet(), ordenacaoGet());
          
          retorno = new RetirarLazy<Entity>(retorno).execute();
-         response.setData(this.atualizarEntidadeResponse(retorno));
+         
+         if(retorno != null) 
+         {
+            response.setData(this.atualizarEntidadeResponse(retorno));
+         }
+         
          this.executarPosGet(retorno);
          return ResponseEntity.ok(response);
       }
