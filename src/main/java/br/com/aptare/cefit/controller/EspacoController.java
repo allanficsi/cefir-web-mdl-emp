@@ -171,7 +171,7 @@ public class EspacoController extends AptareCrudController<Espaco, EspacoService
                             "endereco.correio*", 
                             "listaEspacoItemEspaco*.itemEspaco*", 
                             "auditoria*", 
-                            "endereco.auditoria*" };
+                            "endereco.auditoria.usuarioInclusao" };
    }
    
    @Override
