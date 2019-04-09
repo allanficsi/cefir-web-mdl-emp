@@ -53,6 +53,7 @@ public class UsuarioController
             UsuarioDTO retorno = new UsuarioDTO();
             retorno.setCodigo(filter.getCodigo());
             retorno.setCodigoCadastroUnico(filter.getCodigoCadastroUnico());
+            retorno.setNome(filter.getNome());
             response.setData(retorno);
          }
       }
