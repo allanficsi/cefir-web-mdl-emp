@@ -12,10 +12,15 @@ import br.com.aptare.comum.servico.DominioService;
 @CrossOrigin(origins = "*")
 public class DominioController extends AptareCrudController<Dominio, DominioService>
 {
-   
    public DominioController()
    {
       super(DominioService.getInstancia());
+   }
+   
+   @Override
+   protected String[] ordenacaoPesquisar()
+   {
+      return new String[] { "nomeValor" };
    }
 
 }

@@ -39,7 +39,7 @@ public class EspacoController extends AptareCrudController<Espaco, EspacoService
    @Override
    protected String[] juncaoPesquisar()
    {
-      return new String[] { "listaEspacoItemEspaco" };
+      return new String[] { "listaEspacoItemEspaco", "local" };
    }
    
    @Override
