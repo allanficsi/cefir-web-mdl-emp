@@ -30,7 +30,10 @@ public class CadastroUnicoController extends AptareCrudController<CadastroUnico,
    @Override
    protected String[] juncaoGet()
    {
-      return new String[] { "pessoaFisica.listaTelefone*", "listaEndereco.extensaoEndereco*", "listaEndereco.correio*", "auditoria.usuarioInclusao" };
+      //return new String[] { "pessoaFisica.listaTelefone*", "listaEndereco.extensaoEndereco*", "listaEndereco.correio*", "auditoria.usuarioInclusao" };
+      return new String[] { "pessoaFisica*.listaTelefone*", "pessoaJuridica*.listaContato*.cargo*", 
+                            "pessoaJuridica*.listaContato*.listaTelefone*.auditoria*", 
+                            "listaEndereco.extensaoEndereco*", "listaEndereco.correio*", "auditoria.usuarioInclusao" };
    }
    
    @Override
