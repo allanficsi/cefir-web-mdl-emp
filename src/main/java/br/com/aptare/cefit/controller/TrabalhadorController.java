@@ -7,6 +7,8 @@ import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 
+import br.com.aptare.cefit.trabalhador.dto.TrabalhadorAgendaDTO;
+import br.com.aptare.cefit.trabalhador.entity.TrabalhadorAgenda;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -102,6 +104,17 @@ public class TrabalhadorController extends AptareCrudController<Trabalhador, Tra
          }
       }
 
+      //ATUALIZANDO CODIGO TRABALHADOR (listaTrabalhadorAgenda
+      if (trabalhador.getListaTrabalhadorAgenda() != null && trabalhador.getListaTrabalhadorAgenda().size() > 0)
+      {
+         List<TrabalhadorAgenda> lista = new ArrayList<TrabalhadorAgenda>(trabalhador.getListaTrabalhadorAgenda());
+         List<TrabalhadorAgendaDTO> listaDTO = new ArrayList<TrabalhadorAgendaDTO>(dto.getListaTrabalhadorAgenda());
+
+         for (int i = 0; i < lista.size(); i++)
+         {
+            listaDTO.get(i).setCodigoTrabalhador(lista.get(i).getCodigoTrabalhador());
+         }
+      }
       return dto;
    }
 
