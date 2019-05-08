@@ -128,7 +128,7 @@ public class UsuarioController
          celular.setDdd(new Integer(to.getCelular().toString().substring(0, 2)));
          celular.setNumero(new Integer(to.getCelular().toString().substring(2)));
          celular.setFlagAtivo("S");
-         celular.setTipo(1); // celular
+         celular.setTipo(2); // celular
          celular.setFlagWhats(false);
          celular.setFlagPrincipal("S");
          celular.setFlagSms("N");
