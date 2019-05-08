@@ -7,11 +7,12 @@ import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 
+import br.com.aptare.cefit.response.Response;
 import br.com.aptare.cefit.trabalhador.dto.TrabalhadorAgendaDTO;
 import br.com.aptare.cefit.trabalhador.entity.TrabalhadorAgenda;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.*;
 
 import br.com.aptare.cefit.empregador.service.EmpregadorService;
 import br.com.aptare.cefit.trabalhador.dto.TrabalhadorCboDTO;
@@ -132,6 +133,28 @@ public class TrabalhadorController extends AptareCrudController<Trabalhador, Tra
 
       return dto;
 
+   }
+   @PostMapping(path = "/salvarManutencao")
+   public ResponseEntity<Response<Object>> salvarManutencao(HttpServletRequest request, @RequestBody Trabalhador entity, BindingResult result)
+   {
+      Response<Object> response = new Response<Object>();
+      try
+      {
+         validarInserir(entity, result);
+         if (result.hasErrors())
+         {
+            result.getAllErrors().forEach(error -> response.getErrors().add(error.getDefaultMessage()));
+            return ResponseEntity.badRequest().body(response);
+         }
+
+         getService().salvarManutencao(entity);
+      }
+      catch (AptareException e)
+      {
+         response.getErrors().add(e.getMensagem());
+         return ResponseEntity.badRequest().body(response);
+      }
+      return ResponseEntity.ok(response);
    }
 
 }
