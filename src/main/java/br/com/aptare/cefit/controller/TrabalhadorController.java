@@ -71,6 +71,12 @@ public class TrabalhadorController extends AptareCrudController<Trabalhador, Tra
    }
 
    @Override
+   protected void completarAlterar(Trabalhador entity, HttpServletRequest request)
+   {
+      entity.setSituacao(TrabalhadorService.SITUACAO_ATIVA);
+   }
+   
+   @Override
    protected Object atualizarEntidadeResponse(Trabalhador trabalhador)
    {
       TrabalhadorDTO dto = new TrabalhadorDTO();

@@ -12,10 +12,15 @@ import br.com.aptare.cefit.trabalhador.service.CboService;
 @CrossOrigin(origins = "*")
 public class CboController extends AptareCrudController<Cbo, CboService>
 {
-   
    public CboController()
    {
       super(CboService.getInstancia());
+   }
+   
+   @Override
+   protected String[] ordenacaoPesquisar()
+   {
+      return new String[] { "nome" };
    }
 
 }
