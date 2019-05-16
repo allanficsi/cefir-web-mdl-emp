@@ -6,14 +6,22 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import javax.servlet.http.HttpServletRequest;
+
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import br.com.aptare.cefit.response.Response;
+import br.com.aptare.cefit.util.RetirarLazy;
 import br.com.aptare.cefit.vagas.dto.VagaAgendamentoDTO;
 import br.com.aptare.cefit.vagas.dto.VagaDTO;
 import br.com.aptare.cefit.vagas.entity.Vaga;
 import br.com.aptare.cefit.vagas.service.VagaService;
+import br.com.aptare.fda.exception.AptareException;
 
 @RestController
 @RequestMapping("/api/vaga")
@@ -23,6 +31,23 @@ public class VagaController extends AptareCrudController<Vaga, VagaService>
    public VagaController()
    {
       super(VagaService.getInstancia());
+   }
+   
+   @PostMapping(path = "/alterarSituacaoVaga")
+   public ResponseEntity<Response<Object>> alterarSituacaoVaga(HttpServletRequest request, @RequestBody Vaga vaga)
+   {
+      Response<Object> response = new Response<Object>();
+      try
+      {
+         Vaga objAtualizar = new RetirarLazy<Vaga>(getService().alterarSituacaoVaga(vaga)).execute();
+         response.setData(this.atualizarEntidadeResponse(objAtualizar));
+      }
+      catch (AptareException e)
+      {
+         response.getErrors().add(e.getMensagem());
+         return ResponseEntity.badRequest().body(response);
+      }
+      return ResponseEntity.ok(response);
    }
    
    @Override
