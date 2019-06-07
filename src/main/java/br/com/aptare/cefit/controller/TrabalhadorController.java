@@ -94,7 +94,8 @@ public class TrabalhadorController extends AptareCrudController<Trabalhador, Tra
    @Override
    protected String[] juncaoPesquisar()
    {
-      return new String[] { "cadastroUnico.pessoaFisica" };
+      return new String[] { "cadastroUnico.pessoaFisica.listaTelefone*",
+                            "cadastroUnico.listaEndereco.correio*", "cadastroUnico.listaEndereco.extensaoEndereco*", "auditoria.usuarioInclusao" };
    }
 
    @Override

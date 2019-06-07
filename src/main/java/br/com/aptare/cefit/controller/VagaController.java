@@ -59,9 +59,21 @@ public class VagaController extends AptareCrudController<Vaga, VagaService>
    }
    
    @Override
+   protected String[] juncaoPesquisar()
+   {
+      return new String[] { "trabalhadorEntity*.cadastroUnico*.pessoaFisica*" };
+   }
+   
+   @Override
    protected String[] ordenacaoGet()
    {
       return new String[] { "listaVagaAgendamento.numeroDia" };
+   }
+   
+   @Override
+   protected String[] ordenacaoPesquisar()
+   {
+      return new String[] { "descricao" };
    }
 
    @Override
