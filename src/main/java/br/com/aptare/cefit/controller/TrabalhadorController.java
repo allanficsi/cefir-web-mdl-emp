@@ -1,6 +1,7 @@
 package br.com.aptare.cefit.controller;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -8,20 +9,14 @@ import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletRequest;
 
 import br.com.aptare.cefit.response.Response;
-import br.com.aptare.cefit.trabalhador.dto.TrabalhadorAgendaDTO;
-import br.com.aptare.cefit.trabalhador.entity.TrabalhadorAgenda;
+import br.com.aptare.cefit.trabalhador.dto.*;
+import br.com.aptare.cefit.trabalhador.entity.*;
 import br.com.aptare.cefit.util.RetirarLazy;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import br.com.aptare.cefit.empregador.service.EmpregadorService;
-import br.com.aptare.cefit.trabalhador.dto.TrabalhadorCboDTO;
-import br.com.aptare.cefit.trabalhador.dto.TrabalhadorDTO;
-import br.com.aptare.cefit.trabalhador.dto.TrabalhadorDeficienciaDTO;
-import br.com.aptare.cefit.trabalhador.entity.Trabalhador;
-import br.com.aptare.cefit.trabalhador.entity.TrabalhadorCbo;
-import br.com.aptare.cefit.trabalhador.entity.TrabalhadorDeficiencia;
 import br.com.aptare.cefit.trabalhador.service.TrabalhadorService;
 import br.com.aptare.fda.exception.AptareException;
 import br.com.aptare.seguranca.entidade.Auditoria;
@@ -101,7 +96,7 @@ public class TrabalhadorController extends AptareCrudController<Trabalhador, Tra
    @Override
    protected String[] juncaoGet()
    {
-      return new String[] { "listaTrabalhadorCbo*.cbo*", "listaTrabalhadorDeficiencia*","listaTrabalhadorAgenda*", "cadastroUnico.pessoaFisica.listaTelefone*",
+      return new String[] { "listaTrabalhadorCbo*.cbo*", "listaTrabalhadorDeficiencia*","listaTrabalhadorAgenda*","listaTrabalhadorLog*", "cadastroUnico.pessoaFisica.listaTelefone*",
          "cadastroUnico.listaEndereco.correio*", "cadastroUnico.listaEndereco.extensaoEndereco*", "auditoria.usuarioInclusao" };
    }
 
@@ -115,6 +110,7 @@ public class TrabalhadorController extends AptareCrudController<Trabalhador, Tra
    protected void completarAlterar(Trabalhador entity, HttpServletRequest request)
    {
       entity.setSituacao(TrabalhadorService.SITUACAO_ATIVA);
+      entity.setSituacaoIngresso(TrabalhadorService.PENDENTE_DE_AVALIACAO);
    }
 
    @Override
@@ -140,7 +136,7 @@ public class TrabalhadorController extends AptareCrudController<Trabalhador, Tra
                }
            }
 
-           // ATUALIZANDO CODIGO TRABALHADOR (listaTrabalhadorDeficiencia
+           // ATUALIZANDO CODIGO TRABALHADOR (listaTrabalhadorDeficiencia)
            if (trabalhador.getListaTrabalhadorDeficiencia() != null && trabalhador.getListaTrabalhadorDeficiencia().size() > 0) {
                List<TrabalhadorDeficiencia> lista = new ArrayList<TrabalhadorDeficiencia>(trabalhador.getListaTrabalhadorDeficiencia());
                List<TrabalhadorDeficienciaDTO> listaDTO = new ArrayList<TrabalhadorDeficienciaDTO>(dto.getListaTrabalhadorDeficiencia());
@@ -150,10 +146,20 @@ public class TrabalhadorController extends AptareCrudController<Trabalhador, Tra
                }
            }
 
-           //ATUALIZANDO CODIGO TRABALHADOR (listaTrabalhadorAgenda
+           //ATUALIZANDO CODIGO TRABALHADOR (listaTrabalhadorAgenda)
            if (trabalhador.getListaTrabalhadorAgenda() != null && trabalhador.getListaTrabalhadorAgenda().size() > 0) {
                List<TrabalhadorAgenda> lista = new ArrayList<TrabalhadorAgenda>(trabalhador.getListaTrabalhadorAgenda());
                List<TrabalhadorAgendaDTO> listaDTO = new ArrayList<TrabalhadorAgendaDTO>(dto.getListaTrabalhadorAgenda());
+
+               for (int i = 0; i < lista.size(); i++) {
+                   listaDTO.get(i).setCodigoTrabalhador(lista.get(i).getCodigoTrabalhador());
+               }
+           }
+
+           //ATUALIZANDO CODIGO TRABALHADOR (listaTrabalhadorLog)
+           if (trabalhador.getListaTrabalhadorLog() != null && trabalhador.getListaTrabalhadorLog().size() > 0) {
+               List<TrabalhadorLog> lista = new ArrayList<TrabalhadorLog>(trabalhador.getListaTrabalhadorLog());
+               List<TrabalhadorLogDTO> listaDTO = new ArrayList<TrabalhadorLogDTO>(dto.getListaTrabalhadorLog());
 
                for (int i = 0; i < lista.size(); i++) {
                    listaDTO.get(i).setCodigoTrabalhador(lista.get(i).getCodigoTrabalhador());
@@ -163,6 +169,8 @@ public class TrabalhadorController extends AptareCrudController<Trabalhador, Tra
        }
       return dto;
    }
+
+
 
    @Override
    protected List<Object> atualizarListaResponse(List<Trabalhador> lista)
@@ -175,6 +183,19 @@ public class TrabalhadorController extends AptareCrudController<Trabalhador, Tra
       TrabalhadorDTO dto = new TrabalhadorDTO();
       modelMapper.getConfiguration().setAmbiguityIgnored(true);
       modelMapper.map(trabalhador, dto);
+
+      //ORDENA LISTA DE LOG'S POR DATA (DESC)
+       if(dto != null
+               && dto.getListaTrabalhadorLog() != null
+               && dto.getListaTrabalhadorLog().size() > 0)
+       {
+           List<TrabalhadorLogDTO> listaAgenda = new ArrayList<TrabalhadorLogDTO>(dto.getListaTrabalhadorLog());
+
+           Collections.sort(listaAgenda, (a1, a2) -> a2.getDataOperacao().compareTo(a1.getDataOperacao()));
+
+           dto.setListaTrabalhadorLogOrdenada(listaAgenda);
+       }
+
 
       return dto;
    }
