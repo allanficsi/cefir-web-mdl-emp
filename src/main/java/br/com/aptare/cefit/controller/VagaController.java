@@ -50,6 +50,33 @@ public class VagaController extends AptareCrudController<Vaga, VagaService>
       return ResponseEntity.ok(response);
    }
    
+   @PostMapping(path = "/listarVagasEncaminhamento")
+   public ResponseEntity<Response<List<Object>>> listarVagasEncaminhamento(HttpServletRequest request, @RequestBody Vaga vaga)
+   {
+      Response<List<Object>> response = new Response<List<Object>>();
+      try
+      {
+         List<Vaga> lista = null;
+         lista = getService().pesquisar(vaga, new String[] { "listaEncaminhamento", "trabalhadorEntity*.cadastroUnico*.pessoaFisica*", "cboEntity",
+                                                             "empregadorEntity.cadastroUnico.pessoaFisica*",
+                                                             "empregadorEntity.cadastroUnico.pessoaJuridica*"}, new String[] { "descricao" });
+         
+         if (lista != null)
+         {
+            lista = (List<Vaga>) new RetirarLazy<List<Vaga>>(lista).execute();
+            List<Object> listaRetorno = this.atualizarListaResponse(lista);
+            response.setData(listaRetorno);
+         }
+         
+         return ResponseEntity.ok(response);
+      }
+      catch (Exception e)
+      {
+         response.getErrors().add(e.getMessage());
+         return ResponseEntity.badRequest().body(response);
+      }
+   }
+   
    @Override
    protected String[] juncaoGet()
    {
@@ -61,7 +88,7 @@ public class VagaController extends AptareCrudController<Vaga, VagaService>
    @Override
    protected String[] juncaoPesquisar()
    {
-      return new String[] { "trabalhadorEntity*.cadastroUnico*.pessoaFisica*" };
+      return new String[] { "trabalhadorEntity*.cadastroUnico*.pessoaFisica*", "cboEntity" };
    }
    
    @Override

@@ -7,22 +7,29 @@ import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 
-import br.com.aptare.cefit.response.Response;
-import br.com.aptare.cefit.trabalhador.dto.TrabalhadorAgendaDTO;
-import br.com.aptare.cefit.trabalhador.entity.TrabalhadorAgenda;
-import br.com.aptare.cefit.util.RetirarLazy;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
+import br.com.aptare.cefit.cadastroUnico.dto.TelefoneDTO;
 import br.com.aptare.cefit.empregador.service.EmpregadorService;
+import br.com.aptare.cefit.response.Response;
+import br.com.aptare.cefit.trabalhador.dto.TrabalhadorAgendaDTO;
 import br.com.aptare.cefit.trabalhador.dto.TrabalhadorCboDTO;
 import br.com.aptare.cefit.trabalhador.dto.TrabalhadorDTO;
 import br.com.aptare.cefit.trabalhador.dto.TrabalhadorDeficienciaDTO;
 import br.com.aptare.cefit.trabalhador.entity.Trabalhador;
+import br.com.aptare.cefit.trabalhador.entity.TrabalhadorAgenda;
 import br.com.aptare.cefit.trabalhador.entity.TrabalhadorCbo;
 import br.com.aptare.cefit.trabalhador.entity.TrabalhadorDeficiencia;
 import br.com.aptare.cefit.trabalhador.service.TrabalhadorService;
+import br.com.aptare.cefit.util.RetirarLazy;
+import br.com.aptare.cefit.vagas.entity.Vaga;
+import br.com.aptare.cefit.vagas.service.EncaminhamentoService;
 import br.com.aptare.fda.exception.AptareException;
 import br.com.aptare.seguranca.entidade.Auditoria;
 
@@ -35,6 +42,31 @@ public class TrabalhadorController extends AptareCrudController<Trabalhador, Tra
    public TrabalhadorController()
    {
       super(TrabalhadorService.getInstancia());
+   }
+   
+   @PostMapping(path = "/listarTrabalhadoresDisponiveis")
+   public ResponseEntity<Response<List<Object>>> listarTrabalhadoresDisponiveis(HttpServletRequest request, @RequestBody Vaga vaga)
+   {
+      Response<List<Object>> response = new Response<List<Object>>();
+      try
+      {
+         List<Trabalhador> lista = null;
+         lista = EncaminhamentoService.getInstancia().listarTrabalhadoresDisponiveis(vaga);
+         
+         if (lista != null)
+         {
+            lista = (List<Trabalhador>) new RetirarLazy<List<Trabalhador>>(lista).execute();
+            List<Object> listaRetorno = this.atualizarListaResponse(lista);
+            response.setData(listaRetorno);
+         }
+         
+         return ResponseEntity.ok(response);
+      }
+      catch (Exception e)
+      {
+         response.getErrors().add(e.getMessage());
+         return ResponseEntity.badRequest().body(response);
+      }
    }
 
    @PostMapping(path = "/salvarManutencao")
@@ -120,8 +152,7 @@ public class TrabalhadorController extends AptareCrudController<Trabalhador, Tra
    @Override
    protected Object atualizarEntidadeResponse(Trabalhador trabalhador)
    {
-      TrabalhadorDTO dto = new TrabalhadorDTO();
-      dto = this.convertToDto(trabalhador);
+      TrabalhadorDTO dto = this.convertToDto(trabalhador);
 
       // ATUALIZANDO CADASTRO UNICO
        if(dto.getCadastroUnico() != null) {
@@ -171,10 +202,33 @@ public class TrabalhadorController extends AptareCrudController<Trabalhador, Tra
    }
 
    private TrabalhadorDTO convertToDto(Trabalhador trabalhador)
-   {      
+   {
       TrabalhadorDTO dto = new TrabalhadorDTO();
       modelMapper.getConfiguration().setAmbiguityIgnored(true);
       modelMapper.map(trabalhador, dto);
+
+      if(dto.getCadastroUnico() != null
+            && dto.getCadastroUnico().getPessoaFisica() != null
+            && dto.getCadastroUnico().getPessoaFisica().getListaTelefone() != null
+            && dto.getCadastroUnico().getPessoaFisica().getListaTelefone().size() > 0)
+      {
+         String telefoneExtenso = "";
+         int cont = 1;
+         
+         for (TelefoneDTO telefone : dto.getCadastroUnico().getPessoaFisica().getListaTelefone())
+         {
+            telefoneExtenso += "(" + telefone.getDdd() + ") " + telefone.getNumero();
+            
+            if(cont != dto.getCadastroUnico().getPessoaFisica().getListaTelefone().size())
+            {
+               telefoneExtenso += ", ";
+            }
+            
+            cont++;
+         }
+         
+         dto.setTelefoneExtenso(telefoneExtenso);
+      }
 
       return dto;
    }
