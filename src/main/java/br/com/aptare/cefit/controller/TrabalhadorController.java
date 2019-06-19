@@ -135,7 +135,7 @@ public class TrabalhadorController extends AptareCrudController<Trabalhador, Tra
    @Override
    protected String[] juncaoGet()
    {
-      return new String[] { "listaTrabalhadorCbo*.cbo*", "listaTrabalhadorDeficiencia*","listaTrabalhadorAgenda*", "cadastroUnico.pessoaFisica.listaTelefone*",
+      return new String[] { "listaTrabalhadorCbo*.cbo*", "listaTrabalhadorDeficiencia*","listaTrabalhadorLog*","listaTrabalhadorAgenda*", "cadastroUnico.pessoaFisica.listaTelefone*",
          "cadastroUnico.listaEndereco.correio*", "cadastroUnico.listaEndereco.extensaoEndereco*", "auditoria.usuarioInclusao" };
    }
 
