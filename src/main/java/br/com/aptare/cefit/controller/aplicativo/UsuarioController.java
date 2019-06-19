@@ -17,6 +17,7 @@ import br.com.aptare.cadastroUnico.entidade.PessoaFisica;
 import br.com.aptare.cadastroUnico.entidade.TelefonePF;
 import br.com.aptare.cefit.response.Response;
 import br.com.aptare.cefit.seguranca.dto.UsuarioDTO;
+import br.com.aptare.cefit.trabalhador.entity.Trabalhador;
 import br.com.aptare.cefit.trabalhador.service.TrabalhadorService;
 import br.com.aptare.cefit.util.RetirarLazy;
 import br.com.aptare.fda.exception.AptareException;
@@ -41,9 +42,29 @@ public class UsuarioController
          filter.setLogin(to.getLogin());
          filter = UsuarioService.getInstancia().get(filter, null, null);
          
+         if (filter == null)
+         {
+            throw new AptareException("msg.geral", new String[] {"O Usuário ou senha inválido."});
+         }
+         
          if (!to.getSenha().equals(filter.getSenha()))
          {
             throw new AptareException("msg.geral", new String[] {"O Usuário ou senha inválido."});
+         }
+         
+         if (filter.getSituacao().intValue() != UsuarioService.SITUACAO_ATIVO)
+         {
+            throw new AptareException("msg.geral", new String[] {"O Usuário não está ATIVO."});
+         }
+         
+         Trabalhador trabalhador = new Trabalhador();
+         trabalhador.setCodigoCadastroUnico(filter.getCodigoCadastroUnico());
+         
+         trabalhador = TrabalhadorService.getInstancia().get(trabalhador, new String[] {"cadastroUnico"}, null);
+         
+         if (trabalhador.getSituacao().intValue() == TrabalhadorService.SITUACAO_PENDENTE)
+         {
+            throw new AptareException("msg.geral", new String[] {"Você está com o cadastro PENDENTE atualize o seu cadastro no Órgão Responsavél."});
          }
          
          filter = new RetirarLazy<Usuario>(filter).execute();
@@ -93,6 +114,7 @@ public class UsuarioController
          
          // dados cadastro unico
          entity.setCadastroUnico(new CadastroUnico());
+         entity.getCadastroUnico().setTipoPessoa("F");
          entity.getCadastroUnico().setCpfCnpj(to.getCpf());
          entity.getCadastroUnico().setNome(to.getNome());
          entity.getCadastroUnico().setPessoaFisica(new PessoaFisica());
@@ -103,10 +125,10 @@ public class UsuarioController
          
          // dados celular
          TelefonePF celular = new TelefonePF();
-         celular.setDdd(85);
-         celular.setNumero(to.getCelular().intValue());
+         celular.setDdd(new Integer(to.getCelular().toString().substring(0, 2)));
+         celular.setNumero(new Integer(to.getCelular().toString().substring(2)));
          celular.setFlagAtivo("S");
-         celular.setTipo(1);
+         celular.setTipo(2); // celular
          celular.setFlagWhats(false);
          celular.setFlagPrincipal("S");
          celular.setFlagSms("N");
