@@ -1,6 +1,7 @@
 package br.com.aptare.cefit.controller;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -22,6 +23,7 @@ import br.com.aptare.cefit.trabalhador.dto.TrabalhadorAgendaDTO;
 import br.com.aptare.cefit.trabalhador.dto.TrabalhadorCboDTO;
 import br.com.aptare.cefit.trabalhador.dto.TrabalhadorDTO;
 import br.com.aptare.cefit.trabalhador.dto.TrabalhadorDeficienciaDTO;
+import br.com.aptare.cefit.trabalhador.dto.TrabalhadorLogDTO;
 import br.com.aptare.cefit.trabalhador.entity.Trabalhador;
 import br.com.aptare.cefit.trabalhador.entity.TrabalhadorAgenda;
 import br.com.aptare.cefit.trabalhador.entity.TrabalhadorCbo;
