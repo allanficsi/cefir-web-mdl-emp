@@ -229,6 +229,18 @@ public class TrabalhadorController extends AptareCrudController<Trabalhador, Tra
          
          dto.setTelefoneExtenso(telefoneExtenso);
       }
+      
+      //ORDENA LISTA DE LOG'S POR DATA (DESC)
+       if(dto != null
+               && dto.getListaTrabalhadorLog() != null
+               && dto.getListaTrabalhadorLog().size() > 0)
+       {
+           List<TrabalhadorLogDTO> listaAgenda = new ArrayList<TrabalhadorLogDTO>(dto.getListaTrabalhadorLog());
+
+           Collections.sort(listaAgenda, (a1, a2) -> a2.getDataOperacao().compareTo(a1.getDataOperacao()));
+
+           dto.setListaTrabalhadorLogOrdenada(listaAgenda);
+       }
 
       return dto;
    }
