@@ -37,7 +37,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter
       http.csrf().disable().exceptionHandling().authenticationEntryPoint(unauthorizedHandler).and().sessionManagement()
             .sessionCreationPolicy(SessionCreationPolicy.STATELESS).and().authorizeRequests()
             .antMatchers(HttpMethod.GET, "/", "/*.html", "/favicon.ico", "/**/*.html", "/**/*.css", "/**/*.js").permitAll()
-            .antMatchers("/api/auth/**").permitAll().antMatchers("/aplicativo/**").antMatchers("/api/socket/**").permitAll().anyRequest().authenticated();
+            .antMatchers("/api/auth/**").permitAll().antMatchers("/aplicativo/**").permitAll().antMatchers("/api/socket/**").permitAll().anyRequest().authenticated();
       http.addFilterBefore(authenticationTokenFilterBean(), UsernamePasswordAuthenticationFilter.class);
       http.headers().cacheControl();
       http.cors();
