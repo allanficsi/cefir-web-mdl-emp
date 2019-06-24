@@ -1,25 +1,20 @@
 package br.com.aptare.cefit.controller;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.List;
-import java.util.stream.Collectors;
-
-import javax.servlet.http.HttpServletRequest;
-
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
 import br.com.aptare.cadastroUnico.entidade.Contato;
 import br.com.aptare.cefit.cadastroUnico.dto.ContatoDTO;
 import br.com.aptare.cefit.empregador.dto.EmpregadorDTO;
 import br.com.aptare.cefit.empregador.entity.Empregador;
 import br.com.aptare.cefit.empregador.service.EmpregadorService;
+import br.com.aptare.cefit.response.Response;
+import br.com.aptare.cefit.util.RetirarLazy;
 import br.com.aptare.fda.exception.AptareException;
 import br.com.aptare.seguranca.entidade.Auditoria;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import javax.servlet.http.HttpServletRequest;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/empregador")
@@ -31,6 +26,26 @@ public class EmpregadorController extends AptareCrudController<Empregador, Empre
    {
       super(EmpregadorService.getInstancia());
    }
+
+   @PostMapping(path = "/resetarSenha")
+   public ResponseEntity<Response<Object>> resetarSenha(HttpServletRequest request, @RequestBody Empregador entity)
+   {
+      Response<Object> response = new Response<Object>();
+      try
+      {
+         Empregador objAtualizar = new RetirarLazy<Empregador>(getService().resetarSenha(entity)).execute();
+         response.setData(objAtualizar);
+      }
+      catch (AptareException e)
+      {
+         response.getErrors().add(e.getMensagem());
+         return ResponseEntity.badRequest().body(response);
+      }
+      return ResponseEntity.ok(response);
+   }
+
+
+
 
    @Override
    protected void atualizarStatusEntidade(HttpServletRequest request, Empregador entity, String status) throws AptareException

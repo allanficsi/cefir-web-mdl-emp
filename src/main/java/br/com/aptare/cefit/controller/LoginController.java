@@ -1,9 +1,17 @@
 package br.com.aptare.cefit.controller;
 
-import java.util.List;
-
-import javax.servlet.http.HttpServletRequest;
-
+import br.com.aptare.cefit.cadastroUnico.dto.CadastroUnicoDTO;
+import br.com.aptare.cefit.empregador.dto.EmpregadorDTO;
+import br.com.aptare.cefit.empregador.entity.Empregador;
+import br.com.aptare.cefit.empregador.service.EmpregadorService;
+import br.com.aptare.cefit.response.Response;
+import br.com.aptare.cefit.security.jwt.JwtAuthenticationRequest;
+import br.com.aptare.cefit.security.jwt.JwtTokenUtil;
+import br.com.aptare.cefit.security.model.CurrentUser;
+import br.com.aptare.cefit.seguranca.dto.UsuarioDTO;
+import br.com.aptare.fda.exception.AptareException;
+import br.com.aptare.seguranca.entidade.Usuario;
+import br.com.aptare.seguranca.servico.UsuarioService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -18,14 +26,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import br.com.aptare.cefit.response.Response;
-import br.com.aptare.cefit.security.jwt.JwtAuthenticationRequest;
-import br.com.aptare.cefit.security.jwt.JwtTokenUtil;
-import br.com.aptare.cefit.security.model.CurrentUser;
-import br.com.aptare.cefit.seguranca.dto.UsuarioDTO;
-import br.com.aptare.fda.exception.AptareException;
-import br.com.aptare.seguranca.entidade.Usuario;
-import br.com.aptare.seguranca.servico.UsuarioService;
+import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 
 @RestController
 @CrossOrigin(origins = "*")
@@ -53,17 +55,33 @@ public class LoginController
           SecurityContextHolder.getContext().setAuthentication(authentication);
           final UserDetails userDetails = userDetailsService.loadUserByUsername(authenticationRequest.getLogin());
           final String token = jwtTokenUtil.generateToken(userDetails);      
-    
+
+          //OBTENDO USUARIO LOGADO
           Usuario objUsuario = new Usuario();
           objUsuario.setLogin(authenticationRequest.getLogin());
           final Usuario usuario = UsuarioService.getInstancia().get(objUsuario, null, null);
           
           if(usuario != null)
           {
+             //PREENCHENDO USUARIO
              UsuarioDTO usuarioDTO = new UsuarioDTO();
              usuarioDTO.setCodigo(usuario.getCodigo());
              usuarioDTO.setLogin(usuario.getLogin());  
              usuarioDTO.setCodigoCadastroUnico(usuario.getCodigoCadastroUnico());
+
+              Empregador objEmpregador = new Empregador();
+              objEmpregador.setCodigoCadastroUnico(usuario.getCodigoCadastroUnico());
+
+              final  Empregador empregadorEntity = EmpregadorService.getInstancia().get(objEmpregador,new String[]{"cadastroUnico"},null);
+              EmpregadorDTO empregadorDTO = new EmpregadorDTO();
+
+              CadastroUnicoDTO cadastroUnicoDTO = new CadastroUnicoDTO();
+              cadastroUnicoDTO.setNome(empregadorEntity.getCadastroUnico().getNome());
+
+              empregadorDTO.setCodigo(empregadorEntity.getCodigo());
+              empregadorDTO.setCadastroUnico(cadastroUnicoDTO);
+
+              usuarioDTO.setEmpregador(empregadorDTO);
        
              return ResponseEntity.ok(new CurrentUser(token, usuarioDTO));
           }
