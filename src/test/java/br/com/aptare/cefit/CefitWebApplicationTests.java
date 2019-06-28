@@ -1,5 +1,8 @@
 package br.com.aptare.cefit;
 
+import br.com.aptare.cefit.vagas.entity.Vaga;
+import br.com.aptare.cefit.vagas.service.VagaService;
+import br.com.aptare.fda.exception.AptareException;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -16,13 +19,16 @@ public class CefitWebApplicationTests {
 
 	@Test
 	public void givenPassword_whenHashing_thenVerifying()
-			throws NoSuchAlgorithmException {
+			throws NoSuchAlgorithmException, AptareException {
 
-		String password = "Qce7";
-		String hash = this.MD5(password);
+		Vaga v = new Vaga();
+		v.setCodigoEmpregador(90l);
 
+		VagaService.getInstancia().pesquisar(v,null,null);
 
-		System.out.println(hash);
+		int n = VagaService.getInstancia().pesquisar(v,null,null).size();
+
+		System.out.println("ARRAY SIZEEEE" + n);
 	}
 
 

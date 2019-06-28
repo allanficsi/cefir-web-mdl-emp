@@ -27,25 +27,6 @@ public class EmpregadorController extends AptareCrudController<Empregador, Empre
       super(EmpregadorService.getInstancia());
    }
 
-   @PostMapping(path = "/resetarSenha")
-   public ResponseEntity<Response<Object>> resetarSenha(HttpServletRequest request, @RequestBody Empregador entity)
-   {
-      Response<Object> response = new Response<Object>();
-      try
-      {
-         Empregador objAtualizar = new RetirarLazy<Empregador>(getService().resetarSenha(entity)).execute();
-         response.setData(objAtualizar);
-      }
-      catch (AptareException e)
-      {
-         response.getErrors().add(e.getMensagem());
-         return ResponseEntity.badRequest().body(response);
-      }
-      return ResponseEntity.ok(response);
-   }
-
-
-
 
    @Override
    protected void atualizarStatusEntidade(HttpServletRequest request, Empregador entity, String status) throws AptareException
@@ -71,7 +52,7 @@ public class EmpregadorController extends AptareCrudController<Empregador, Empre
    @Override
    protected String[] juncaoGet()
    {
-      return new String[] { "cadastroUnico.pessoaJuridica*.listaContato*.cargo*", 
+      return new String[] { "cadastroUnico.pessoaJuridica*.listaContato*.cargo*",
                             "cadastroUnico.pessoaJuridica*.listaContato*.listaTelefone*.auditoria*", 
                             "cadastroUnico.pessoaFisica*.listaTelefone*.auditoria*",
                             "cadastroUnico.listaEndereco.correio*", 
