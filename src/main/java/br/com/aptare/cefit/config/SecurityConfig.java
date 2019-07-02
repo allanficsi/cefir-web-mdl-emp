@@ -37,24 +37,14 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter
       http.csrf().disable().exceptionHandling().authenticationEntryPoint(unauthorizedHandler).and().sessionManagement()
             .sessionCreationPolicy(SessionCreationPolicy.STATELESS).and().authorizeRequests()
             .antMatchers(HttpMethod.GET, "/", "/*.html", "/favicon.ico", "/**/*.html", "/**/*.css", "/**/*.js").permitAll()
-            .antMatchers(HttpMethod.POST, "/api/cargo/pesquisar").permitAll()
-            .antMatchers(HttpMethod.POST, "/api/dominio/pesquisar").permitAll()
-            .antMatchers(HttpMethod.POST, "/api/cnae/pesquisar").permitAll()
-            .antMatchers(HttpMethod.POST, "/api/cadastroUnico/get").permitAll()
-            .antMatchers(HttpMethod.POST, "/api/correio/pesquisar").permitAll()
-            .antMatchers(HttpMethod.POST, "/api/correio/get").permitAll()
-            .antMatchers(HttpMethod.POST, "/api/empregador/get").permitAll()
-            .antMatchers(HttpMethod.POST, "/api/empregador").permitAll()
-           // .antMatchers(HttpMethod.POST, "/api/empregador/resetarSenha").permitAll()
-            .antMatchers(HttpMethod.POST, "/api/usuario/resetarSenha").permitAll()
-            .antMatchers(HttpMethod.POST, "/api/usuario/cadastrar").permitAll()
+            .antMatchers(HttpMethod.POST, "/api/**/externo/externo/**").permitAll()
             .antMatchers("/api/auth/**").permitAll()
             .antMatchers("/aplicativo/**").permitAll()
             .antMatchers("/api/socket/**").permitAll()
             .anyRequest().authenticated();
-      http.addFilterBefore(authenticationTokenFilterBean(), UsernamePasswordAuthenticationFilter.class);
-      http.headers().cacheControl();
-      http.cors();
+            http.addFilterBefore(authenticationTokenFilterBean(), UsernamePasswordAuthenticationFilter.class);
+            http.headers().cacheControl();
+            http.cors();
    }
 
 //   @Bean

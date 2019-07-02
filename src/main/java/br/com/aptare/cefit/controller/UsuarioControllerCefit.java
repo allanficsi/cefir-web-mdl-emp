@@ -23,14 +23,13 @@ import java.util.Date;
 public class UsuarioControllerCefit extends AptareCrudController<Usuario,UsuarioService>
 {
 
-
-    @PostMapping(path = "/resetarSenha")
-   public ResponseEntity<Response<Object>> resetarSenha(HttpServletRequest request, @RequestBody Empregador entity)
+   @PostMapping(path = "/externo/externo/resetarSenha")
+   public ResponseEntity<Response<Object>> resetarSenha(HttpServletRequest request, @RequestBody Usuario entity)
    {
       Response<Object> response = new Response<Object>();
       try
       {
-         Empregador objAtualizar = new RetirarLazy<Empregador>(UsuarioServiceCefit.getInstancia().resetarSenha(entity)).execute();
+         Usuario objAtualizar = new RetirarLazy<Usuario>(UsuarioServiceCefit.getInstancia().resetarSenha(entity)).execute();
          response.setData(objAtualizar);
       }
       catch (AptareException e)
@@ -65,20 +64,6 @@ public class UsuarioControllerCefit extends AptareCrudController<Usuario,Usuario
       }
       return ResponseEntity.ok(response);
    }
-
-    protected Object atualizarEntidadeEmpregadorResponse(Empregador empregador) {
-        EmpregadorDTO dto = new EmpregadorDTO();
-        dto = this.convertToEmpregadorDto(empregador);
-        return dto;
-    }
-
-    private EmpregadorDTO convertToEmpregadorDto(Empregador empregador) {
-        EmpregadorDTO dto = new EmpregadorDTO();
-        modelMapper.getConfiguration().setAmbiguityIgnored(true);
-        modelMapper.map(empregador, dto);
-
-        return dto;
-    }
 
     protected Object atualizarEntidadeResponse(Usuario usuario)
     {
