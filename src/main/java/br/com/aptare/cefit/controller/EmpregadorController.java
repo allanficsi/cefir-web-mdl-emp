@@ -56,8 +56,10 @@ public class EmpregadorController extends AptareCrudController<Empregador, Empre
                             "cadastroUnico.pessoaJuridica*.listaContato*.listaTelefone*.auditoria*", 
                             "cadastroUnico.pessoaFisica*.listaTelefone*.auditoria*",
                             "cadastroUnico.listaEndereco.correio*", 
-                            "cadastroUnico.listaEndereco.extensaoEndereco*", 
-                            "auditoria.usuarioInclusao" };
+                            "cadastroUnico.listaEndereco.extensaoEndereco*",
+                            "auditoria.usuarioInclusao",
+                            "auditoria.usuarioAlteracao*"
+      };
    }
    
    @Override

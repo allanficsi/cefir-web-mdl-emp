@@ -69,20 +69,6 @@ public class LoginController
              usuarioDTO.setLogin(usuario.getLogin());  
              usuarioDTO.setCodigoCadastroUnico(usuario.getCodigoCadastroUnico());
 
-              Empregador objEmpregador = new Empregador();
-              objEmpregador.setCodigoCadastroUnico(usuario.getCodigoCadastroUnico());
-
-              final  Empregador empregadorEntity = EmpregadorService.getInstancia().get(objEmpregador,new String[]{"cadastroUnico"},null);
-              EmpregadorDTO empregadorDTO = new EmpregadorDTO();
-
-              CadastroUnicoDTO cadastroUnicoDTO = new CadastroUnicoDTO();
-              cadastroUnicoDTO.setNome(empregadorEntity.getCadastroUnico().getNome());
-
-              empregadorDTO.setCodigo(empregadorEntity.getCodigo());
-              empregadorDTO.setCadastroUnico(cadastroUnicoDTO);
-
-              usuarioDTO.setEmpregador(empregadorDTO);
-       
              return ResponseEntity.ok(new CurrentUser(token, usuarioDTO));
           }
           else
