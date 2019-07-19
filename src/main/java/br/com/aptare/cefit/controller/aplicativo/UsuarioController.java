@@ -1,7 +1,9 @@
 package br.com.aptare.cefit.controller.aplicativo;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.LinkedHashSet;
+import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -17,7 +19,10 @@ import br.com.aptare.cadastroUnico.entidade.PessoaFisica;
 import br.com.aptare.cadastroUnico.entidade.TelefonePF;
 import br.com.aptare.cefit.response.Response;
 import br.com.aptare.cefit.seguranca.dto.UsuarioDTO;
+import br.com.aptare.cefit.trabalhador.dto.DocumentoDTO;
+import br.com.aptare.cefit.trabalhador.entity.Documento;
 import br.com.aptare.cefit.trabalhador.entity.Trabalhador;
+import br.com.aptare.cefit.trabalhador.service.DocumentoService;
 import br.com.aptare.cefit.trabalhador.service.TrabalhadorService;
 import br.com.aptare.cefit.util.RetirarLazy;
 import br.com.aptare.fda.exception.AptareException;
@@ -30,7 +35,7 @@ import br.com.aptare.seguranca.servico.UsuarioService;
 @CrossOrigin(origins = "*")
 public class UsuarioController
 {
-   
+
    @PostMapping(path = "/logar")
    public ResponseEntity<Response<UsuarioDTO>> logar(HttpServletRequest request, @RequestBody UsuarioDTO to)
    {
@@ -38,43 +43,49 @@ public class UsuarioController
       try
       {
          Usuario filter = new Usuario();
-         
+
          filter.setLogin(to.getLogin());
          filter = UsuarioService.getInstancia().get(filter, null, null);
-         
+
          if (filter == null)
          {
             throw new AptareException("msg.geral", new String[] {"O Usuário ou senha inválido."});
          }
-         
+
          if (!to.getSenha().equals(filter.getSenha()))
          {
             throw new AptareException("msg.geral", new String[] {"O Usuário ou senha inválido."});
          }
-         
+
          if (filter.getSituacao().intValue() != UsuarioService.SITUACAO_ATIVO)
          {
             throw new AptareException("msg.geral", new String[] {"O Usuário não está ATIVO."});
          }
-         
+
          Trabalhador trabalhador = new Trabalhador();
          trabalhador.setCodigoCadastroUnico(filter.getCodigoCadastroUnico());
-         
+
          trabalhador = TrabalhadorService.getInstancia().get(trabalhador, new String[] {"cadastroUnico"}, null);
-         
+
+         if (trabalhador == null)
+         {
+            throw new AptareException("msg.geral", new String[] {"Trabalhador não cadastrado."});
+         }
+
          if (trabalhador.getSituacao().intValue() == TrabalhadorService.SITUACAO_PENDENTE)
          {
             throw new AptareException("msg.geral", new String[] {"Você está com o cadastro PENDENTE atualize o seu cadastro no Órgão Responsavél."});
          }
-         
+
          filter = new RetirarLazy<Usuario>(filter).execute();
-         
-         if(filter != null) 
+
+         if(filter != null)
          {
             UsuarioDTO retorno = new UsuarioDTO();
             retorno.setCodigo(filter.getCodigo());
             retorno.setCodigoCadastroUnico(filter.getCodigoCadastroUnico());
             retorno.setNome(filter.getNome());
+            retorno.setCodigoTrabalhador(trabalhador.getCodigo());
             response.setData(retorno);
          }
       }
@@ -82,7 +93,7 @@ public class UsuarioController
       {
          if (e instanceof AptareException)
          {
-            response.getErrors().add(((AptareException)e).getMensagem()); 
+            response.getErrors().add(((AptareException)e).getMensagem());
          }
          else
          {
@@ -90,10 +101,10 @@ public class UsuarioController
          }
          return ResponseEntity.badRequest().body(response);
       }
-      
+
       return ResponseEntity.ok(response);
    }
-   
+
    @PostMapping(path = "/cadastrar")
    public ResponseEntity<Response<UsuarioDTO>> cadastrar(HttpServletRequest request, @RequestBody UsuarioDTO to)
    {
@@ -101,7 +112,7 @@ public class UsuarioController
       try
       {
          Usuario entity = new Usuario();
-         
+
          // dados usuario
          entity.setLogin(to.getLogin());
          entity.setNome(to.getNome());
@@ -111,18 +122,18 @@ public class UsuarioController
          entity.setAuditoria(new Auditoria());
          entity.getAuditoria().setCodigoUsuarioInclusao(1L);
          entity.getAuditoria().setDataInclusao(new Date());
-         
+
          // dados cadastro unico
          entity.setCadastroUnico(new CadastroUnico());
          entity.getCadastroUnico().setTipoPessoa("F");
-         entity.getCadastroUnico().setCpfCnpj(to.getCpf());
+//         entity.getCadastroUnico().setCpfCnpj(to.getCpf());
          entity.getCadastroUnico().setNome(to.getNome());
          entity.getCadastroUnico().setPessoaFisica(new PessoaFisica());
          entity.getCadastroUnico().getPessoaFisica().setDataNascimento(to.getDataNascimento());
          entity.getCadastroUnico().setAuditoria(new Auditoria());
          entity.getCadastroUnico().getAuditoria().setCodigoUsuarioInclusao(1L);
          entity.getCadastroUnico().getAuditoria().setDataInclusao(new Date());
-         
+
          // dados celular
          TelefonePF celular = new TelefonePF();
          celular.setDdd(new Integer(to.getCelular().toString().substring(0, 2)));
@@ -132,15 +143,34 @@ public class UsuarioController
          celular.setFlagWhats(false);
          celular.setFlagPrincipal("S");
          celular.setFlagSms("N");
-         celular.setAuditoria(new Auditoria());
-         celular.getAuditoria().setCodigoUsuarioInclusao(1L);
-         celular.getAuditoria().setDataInclusao(new Date());
+         celular.setAuditoria(entity.getAuditoria());
          entity.getCadastroUnico().getPessoaFisica().setListaTelefone(new LinkedHashSet<TelefonePF>());
          entity.getCadastroUnico().getPessoaFisica().getListaTelefone().add(celular);
-         
-         TrabalhadorService.getInstancia().cadastrarUsuario(entity);
-         
-         if(entity != null) 
+
+         List<Documento> listaDocumento = null;
+
+         if (to.getListaDocumento() != null
+                 && to.getListaDocumento().size() > 0)
+         {
+            Documento add = null;
+            listaDocumento = new ArrayList<Documento>();
+
+            for (DocumentoDTO elemento : to.getListaDocumento())
+            {
+               add = new Documento();
+               add.setExtensao("jpg");
+               add.setBase64(elemento.getBase64());
+               add.setTipo(elemento.getTipo());
+               add.setFlagAtivo("S");
+               add.setAuditoria(entity.getAuditoria());
+
+               listaDocumento.add(add);
+            }
+         }
+
+         TrabalhadorService.getInstancia().cadastrarUsuario(entity, listaDocumento);
+
+         if(entity != null)
          {
             UsuarioDTO retorno = new UsuarioDTO();
             retorno.setCodigo(retorno.getCodigo());
@@ -152,7 +182,7 @@ public class UsuarioController
       {
          if (e instanceof AptareException)
          {
-            response.getErrors().add(((AptareException)e).getMensagem()); 
+            response.getErrors().add(((AptareException)e).getMensagem());
          }
          else
          {
@@ -160,10 +190,66 @@ public class UsuarioController
          }
          return ResponseEntity.badRequest().body(response);
       }
-      
+
       return ResponseEntity.ok(response);
    }
-   
+
+   @PostMapping(path = "/consultarDocumento")
+   public ResponseEntity<Response<List<DocumentoDTO>>> consultarDocumento(HttpServletRequest request, @RequestBody DocumentoDTO to)
+   {
+      Response<List<DocumentoDTO>> response = new Response<List<DocumentoDTO>>();
+      List<DocumentoDTO> retorno = null;
+
+      try
+      {
+         retorno = new ArrayList<DocumentoDTO>();
+
+         DocumentoDTO add = new DocumentoDTO();
+         add.setTipo(DocumentoService.TIPO_FOTO);
+         add.setDescricaoTipo("FOTO PERFIL");
+         add.setCodigoTrabalhador(to.getCodigoTrabalhador());
+         add.setFlagExisteArquivo("N");
+         retorno.add(add);
+
+         add = new DocumentoDTO();
+         add.setTipo(DocumentoService.TIPO_CPF);
+         add.setDescricaoTipo("CPF");
+         add.setCodigoTrabalhador(to.getCodigoTrabalhador());
+         add.setFlagExisteArquivo("N");
+         retorno.add(add);
+
+         add = new DocumentoDTO();
+         add.setTipo(DocumentoService.TIPO_RG);
+         add.setDescricaoTipo("RG");
+         add.setCodigoTrabalhador(to.getCodigoTrabalhador());
+         add.setFlagExisteArquivo("N");
+         retorno.add(add);
+
+         add = new DocumentoDTO();
+         add.setTipo(DocumentoService.TIPO_CURRICULO);
+         add.setDescricaoTipo("CURRICULO");
+         add.setCodigoTrabalhador(to.getCodigoTrabalhador());
+         add.setFlagExisteArquivo("N");
+         retorno.add(add);
+
+         response.setData(retorno);
+      }
+      catch (Exception e)
+      {
+         if (e instanceof AptareException)
+         {
+            response.getErrors().add(((AptareException)e).getMensagem());
+         }
+         else
+         {
+            response.getErrors().add(e.getMessage());
+         }
+         return ResponseEntity.badRequest().body(response);
+      }
+
+      return ResponseEntity.ok(response);
+   }
+
    public String MD5(String md5)
    {
       try

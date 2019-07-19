@@ -26,16 +26,15 @@ public class CadastroUnicoController extends AptareCrudController<CadastroUnico,
    {
       return new String[] { "pessoaFisica" };
    }
-   
+
    @Override
    protected String[] juncaoGet()
    {
-      //return new String[] { "pessoaFisica.listaTelefone*", "listaEndereco.extensaoEndereco*", "listaEndereco.correio*", "auditoria.usuarioInclusao" };
-      return new String[] { "pessoaFisica*.listaTelefone*", "pessoaJuridica*.listaContato*.cargo*", 
-                            "pessoaJuridica*.listaContato*.listaTelefone*.auditoria*", 
-                            "listaEndereco.extensaoEndereco*", "listaEndereco.correio*", "auditoria.usuarioInclusao" };
+      return new String[] { "pessoaFisica*.listaTelefone*", "pessoaJuridica*.listaContato*.cargo*",
+              "pessoaJuridica*.listaContato*.listaTelefone*.auditoria*",
+              "listaEndereco.extensaoEndereco*", "listaEndereco.correio*", "auditoria.usuarioInclusao","auditoria.usuarioAlteracao*" };
    }
-   
+
    @Override
    protected String[] ordenacaoPesquisar()
    {
@@ -51,7 +50,7 @@ public class CadastroUnicoController extends AptareCrudController<CadastroUnico,
       {
          dto = this.convertToDto(cadastroUnico);
       }
-      
+
       return dto;
    }
 
@@ -66,7 +65,7 @@ public class CadastroUnicoController extends AptareCrudController<CadastroUnico,
       CadastroUnicoDTO dto = new CadastroUnicoDTO();
       modelMapper.getConfiguration().setAmbiguityIgnored(true);
       modelMapper.map(cadastroUnico, dto);
-      
+
       return dto;
    }
 

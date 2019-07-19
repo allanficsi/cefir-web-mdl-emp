@@ -1,8 +1,5 @@
 package br.com.aptare.cefit.controller;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -17,7 +14,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import br.com.aptare.cefit.response.Response;
 import br.com.aptare.cefit.util.RetirarLazy;
-import br.com.aptare.cefit.vagas.dto.VagaAgendamentoDTO;
 import br.com.aptare.cefit.vagas.dto.VagaDTO;
 import br.com.aptare.cefit.vagas.entity.Vaga;
 import br.com.aptare.cefit.vagas.service.VagaService;
@@ -32,7 +28,7 @@ public class VagaController extends AptareCrudController<Vaga, VagaService>
    {
       super(VagaService.getInstancia());
    }
-   
+
    @PostMapping(path = "/alterarSituacaoVaga")
    public ResponseEntity<Response<Object>> alterarSituacaoVaga(HttpServletRequest request, @RequestBody Vaga vaga)
    {
@@ -49,7 +45,7 @@ public class VagaController extends AptareCrudController<Vaga, VagaService>
       }
       return ResponseEntity.ok(response);
    }
-   
+
    @PostMapping(path = "/listarVagasEncaminhamento")
    public ResponseEntity<Response<List<Object>>> listarVagasEncaminhamento(HttpServletRequest request, @RequestBody Vaga vaga)
    {
@@ -58,16 +54,16 @@ public class VagaController extends AptareCrudController<Vaga, VagaService>
       {
          List<Vaga> lista = null;
          lista = getService().pesquisar(vaga, new String[] { "listaEncaminhamento", "trabalhadorEntity*.cadastroUnico*.pessoaFisica*", "cboEntity",
-                                                             "empregadorEntity.cadastroUnico.pessoaFisica*",
-                                                             "empregadorEntity.cadastroUnico.pessoaJuridica*"}, new String[] { "descricao" });
-         
+                 "empregador.cadastroUnico.pessoaFisica*",
+                 "empregador.cadastroUnico.pessoaJuridica*"}, new String[] { "descricao" });
+
          if (lista != null)
          {
             lista = (List<Vaga>) new RetirarLazy<List<Vaga>>(lista).execute();
             List<Object> listaRetorno = this.atualizarListaResponse(lista);
             response.setData(listaRetorno);
          }
-         
+
          return ResponseEntity.ok(response);
       }
       catch (Exception e)
@@ -76,27 +72,29 @@ public class VagaController extends AptareCrudController<Vaga, VagaService>
          return ResponseEntity.badRequest().body(response);
       }
    }
-   
+
    @Override
    protected String[] juncaoGet()
    {
-      return new String[] { "cboEntity*", "empregadorEntity.cadastroUnico.pessoaFisica*",
-                            "trabalhadorEntity*.cadastroUnico*.pessoaFisica*",
-                            "empregadorEntity.cadastroUnico.pessoaJuridica*", "listaVagaDia*", "listaVagaAgendamento*"};
+      return new String[] { "cboEntity", "empregador.cadastroUnico.pessoaFisica*",
+              "trabalhadorEntity*.cadastroUnico*.pessoaFisica*",
+              "empregador.cadastroUnico.pessoaJuridica*", "listaVagaDia*"};
    }
-   
+
    @Override
    protected String[] juncaoPesquisar()
    {
-      return new String[] { "trabalhadorEntity*.cadastroUnico*.pessoaFisica*", "cboEntity*" };
+      return new String[] { "trabalhadorEntity*.cadastroUnico*.pessoaFisica*",
+              "cboEntity", "trabalhadorEntity.cadastroUnico",
+              "empregador.cadastroUnico" };
    }
-   
+
    @Override
    protected String[] ordenacaoGet()
    {
-      return new String[] { "listaVagaAgendamento.numeroDia" };
+      return new String[] { "listaVagaDia.data" };
    }
-   
+
    @Override
    protected String[] ordenacaoPesquisar()
    {
@@ -108,6 +106,7 @@ public class VagaController extends AptareCrudController<Vaga, VagaService>
    {
       VagaDTO dto = new VagaDTO();
       dto = this.convertToDto(vaga);
+
       return dto;
    }
 
@@ -122,27 +121,21 @@ public class VagaController extends AptareCrudController<Vaga, VagaService>
       VagaDTO dto = new VagaDTO();
       modelMapper.getConfiguration().setAmbiguityIgnored(true);
       modelMapper.map(vaga, dto);
-      
-      //Ordenando listaAgenda
-      if(dto != null 
-            && dto.getListaVagaAgendamento() != null
-            && dto.getListaVagaAgendamento().size() > 0) 
+
+      if(vaga.getCodigoEmpregador() != null
+              && dto.getCodigoEmpregador() == null)
       {
-         List<VagaAgendamentoDTO> listaAgenda = new ArrayList<VagaAgendamentoDTO>(dto.getListaVagaAgendamento());
-         
-         Collections.sort(listaAgenda, new Comparator<VagaAgendamentoDTO>()
-         {
-            @Override
-            
-            public int compare(VagaAgendamentoDTO a1, VagaAgendamentoDTO a2)
-            {
-               return a1.getNumeroDia().compareTo(a2.getNumeroDia());
-            }
-         });
-         
-         dto.setListaVagaAgendamentoOrdenada(listaAgenda);
+         dto.setCodigoEmpregador(vaga.getCodigoEmpregador());
       }
-      
+
+      if(vaga.getEmpregador() != null)
+      {
+         dto.getEmpregador().setCodigoCadastroUnico(vaga.getEmpregador().getCodigoCadastroUnico());
+         dto.getEmpregador().setCodigo(vaga.getCodigoEmpregador());
+      }
+
+      dto.setCodigoEndereco(vaga.getCodigoEndereco());
+
       return dto;
    }
 
