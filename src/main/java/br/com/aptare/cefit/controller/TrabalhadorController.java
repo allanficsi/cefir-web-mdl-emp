@@ -32,6 +32,7 @@ import br.com.aptare.cefit.trabalhador.entity.TrabalhadorAgenda;
 import br.com.aptare.cefit.trabalhador.entity.TrabalhadorCbo;
 import br.com.aptare.cefit.trabalhador.entity.TrabalhadorDeficiencia;
 import br.com.aptare.cefit.trabalhador.service.TrabalhadorService;
+import br.com.aptare.cefit.util.CefitUtils;
 import br.com.aptare.cefit.util.RetirarLazy;
 import br.com.aptare.cefit.vagas.entity.Vaga;
 import br.com.aptare.cefit.vagas.service.EncaminhamentoService;
@@ -186,8 +187,8 @@ public class TrabalhadorController extends AptareCrudController<Trabalhador, Tra
     @Override
     protected String[] juncaoPesquisar()
     {
-        return new String[] { "cadastroUnico.pessoaFisica.listaTelefone*", "cadastroUnico.listaEndereco.correio*",
-                "cadastroUnico.listaEndereco.extensaoEndereco*", "auditoria.usuarioInclusao" };
+        return new String[] { "cadastroUnico.pessoaFisica.listaTelefone*.auditoria*.usuarioInclusao*", "cadastroUnico.listaEndereco.correio*",
+                "cadastroUnico.listaEndereco.extensaoEndereco*", "auditoria.usuarioInclusao", "auditoria.usuarioAlteracao*" };
     }
 
     @Override
@@ -195,7 +196,7 @@ public class TrabalhadorController extends AptareCrudController<Trabalhador, Tra
     {
         return new String[] { "listaTrabalhadorCbo*.cbo*", "listaTrabalhadorDeficiencia*", "listaTrabalhadorLog*",
                 "cadastroUnico.pessoaFisica.listaTelefone*", "cadastroUnico.listaEndereco.correio*",
-                "cadastroUnico.listaEndereco.extensaoEndereco*", "auditoria.usuarioInclusao",
+                "cadastroUnico.listaEndereco.extensaoEndereco*","cadastroUnico.listaEndereco.auditoria*.usuarioInclusao", "auditoria.usuarioInclusao", "auditoria.usuarioAlteracao*",
                 "listaTrabalhadorRejeicao*.empregador*.cadastroUnico*", "listaTrabalhadorAgenda*"};
     }
 
@@ -291,6 +292,8 @@ public class TrabalhadorController extends AptareCrudController<Trabalhador, Tra
 
     private TrabalhadorDTO convertToDto(Trabalhador trabalhador)
     {
+        CefitUtils.atualizarDadosEndereco(trabalhador.getCadastroUnico());
+
         TrabalhadorDTO dto = new TrabalhadorDTO();
         modelMapper.getConfiguration().setAmbiguityIgnored(true);
         modelMapper.map(trabalhador, dto);

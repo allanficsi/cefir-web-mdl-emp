@@ -1,9 +1,11 @@
 package br.com.aptare.cefit.util;
 
-import java.util.Map;
-
+import br.com.aptare.cadastroUnico.entidade.CadastroUnico;
+import br.com.aptare.cadastroUnico.entidade.Endereco;
 import org.apache.commons.beanutils.BeanMap;
 import org.apache.commons.beanutils.PropertyUtils;
+
+import java.util.Map;
 
 public class CefitUtils
 {
@@ -30,6 +32,47 @@ public class CefitUtils
       {
          throw new Exception(e);
       }
+   }
 
+   public static void atualizarDadosEndereco(CadastroUnico cadastroUnico)
+   {
+      if (cadastroUnico != null)
+      {
+         if (cadastroUnico.getListaEndereco() != null && cadastroUnico.getListaEndereco().size() > 0)
+         {
+            for (Endereco element : cadastroUnico.getListaEndereco())
+            {
+               try
+               {
+                  if ((element.getCorreio().getCep() == null))
+                  {
+                     element.setCorreio(null);
+                  }
+               }
+               catch (Exception e)
+               {
+                  element.setCorreio(null);
+               }
+            }
+         }
+      }
+   }
+
+   public static void atualizarDadosEndereco(Endereco endereco)
+   {
+      if (endereco != null)
+      {
+         try
+         {
+            if ((endereco.getCorreio().getCep() == null))
+            {
+               endereco.setCorreio(null);
+            }
+         }
+         catch (Exception e)
+         {
+            endereco.setCorreio(null);
+         }
+      }
    }
 }
