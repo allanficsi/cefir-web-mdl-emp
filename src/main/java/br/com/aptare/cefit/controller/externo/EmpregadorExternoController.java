@@ -12,10 +12,7 @@ import br.com.aptare.fda.exception.AptareException;
 import br.com.aptare.seguranca.entidade.Auditoria;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.*;
@@ -32,12 +29,12 @@ public class EmpregadorExternoController extends EmpregadorController
       super();
    }
 
-   @RequestMapping(path = "/externo/inserir")
+   @PostMapping(path = "/externo/inserir")
    @Override
    public ResponseEntity<Response<Object>> inserir(HttpServletRequest request, @RequestBody Empregador empregador, BindingResult result) {
       return super.inserir(request, empregador, result);
    }
-   @RequestMapping(path = "/externo/get")
+   @PostMapping(path = "/externo/get")
    @Override
    public ResponseEntity<Response<Object>> get(HttpServletRequest request, @RequestBody Empregador empregador) {
       return super.get(request, empregador);

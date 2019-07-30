@@ -8,10 +8,8 @@ import br.com.aptare.cefit.response.Response;
 import br.com.aptare.fda.exception.AptareException;
 import br.com.aptare.seguranca.entidade.Auditoria;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Date;
@@ -25,10 +23,15 @@ public class CargoExternoController extends CargoController {
       super();
    }
 
-   @RequestMapping(path = "/externo/pesquisar")
+   @PostMapping(path = "/externo/pesquisar")
    @Override
    public ResponseEntity<Response<List<Object>>> pesquisar(HttpServletRequest request, @RequestBody Cargo cargo) {
       return super.pesquisar(request, cargo);
    }
 
+   @PostMapping(path = "/externo/inserir")
+   @Override
+   public ResponseEntity<Response<Object>> inserir(HttpServletRequest request, @RequestBody Cargo cargo, BindingResult result) {
+      return super.inserir(request, cargo, result);
+   }
 }

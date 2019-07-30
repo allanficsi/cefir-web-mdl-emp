@@ -5,10 +5,7 @@ import br.com.aptare.cefit.empregador.entity.Cnae;
 import br.com.aptare.cefit.empregador.service.CnaeService;
 import br.com.aptare.cefit.response.Response;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
@@ -24,7 +21,7 @@ public class CnaeExternoController extends AptareCrudController<Cnae, CnaeServic
       super(CnaeService.getInstancia());
    }
 
-   @RequestMapping(path = "/externo/pesquisar")
+   @PostMapping(path = "/externo/pesquisar")
    @Override
    public ResponseEntity<Response<List<Object>>> pesquisar(HttpServletRequest request, @RequestBody  Cnae cnae) {
       return super.pesquisar(request, cnae);

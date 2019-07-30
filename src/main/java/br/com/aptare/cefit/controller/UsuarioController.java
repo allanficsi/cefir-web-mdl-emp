@@ -17,10 +17,10 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import java.util.Date;
 
-@RestController
+@RestController("backOffice")//DEVIDO AO USUARIO CONTROLLER DO GREGORIO
 @RequestMapping("/api/usuario")
 @CrossOrigin(origins = "*")
-public class UsuarioControllerCefit extends AptareCrudController<Usuario,UsuarioService>
+public class UsuarioController extends AptareCrudController<Usuario,UsuarioService>
 {
 
    @PostMapping(path = "/externo/externo/resetarSenha")

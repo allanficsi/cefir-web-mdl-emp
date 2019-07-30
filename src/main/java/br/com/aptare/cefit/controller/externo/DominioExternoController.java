@@ -6,10 +6,7 @@ import br.com.aptare.cefit.response.Response;
 import br.com.aptare.comum.entidade.Dominio;
 import br.com.aptare.comum.servico.DominioService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
@@ -24,7 +21,7 @@ public class DominioExternoController extends DominioController
       super();
    }
 
-   @RequestMapping("/externo/pesquisar")
+   @PostMapping("/externo/pesquisar")
    @Override
    public ResponseEntity<Response<List<Object>>> pesquisar(HttpServletRequest request, @RequestBody Dominio dominio) {
       return super.pesquisar(request, dominio);
